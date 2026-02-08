@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Data Hub</title>
+    <title>Star Data Explorer</title>
     <link rel="shortcut icon" href="./img/favicon.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,14 +16,14 @@
 </head>
 <body>
     <div class="container"> 
-        <h3><i class="fa-solid fa-space-shuttle"></i> Star Data Hub</h3>
-            <p>Interfaz simple para consultar personajes del universo Star Wars</p>
+        <h3><i class="fa-solid fa-rocket"></i> Star Data Explorer</h3>
+            <p>Pagina para consultar información de personajes de Star Wars</p>
     
         <form>  
             <div class="row mt-3">  
                 <div class="col-md-4">  
-                    <label for="nombreHeroe" class="form-label">Nombre del personaje</label>
-                    <input type="text" name="nombreHeroe" id="nombreHeroe" class="form-control" placeholder="Ej. Luke Skywalker">
+                    <label for="NombrePersonaje" class="form-label">Ingresa el nombre del personaje:</label>
+                    <input type="text" name="NombrePersonaje" id="NombrePersonaje" class="form-control" placeholder="Nombre">
                 </div>
             </div>
             <div class="row mt-3">  
@@ -31,15 +31,16 @@
                     <button 
                         class="btn btn-sm btn-warning" 
                         type="button" 
-                        onclick="buscarHeroe()"
+                        onclick="buscarPersonaje()"
                     > 
-                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                        <i class= "fa-solid fa-magnifying glass"> </i>Buscar
                     </button>
                 </div>
             </div>
         </form>
         <div class="row my-5">  
             <div id="resultado">
+            
             </div>
         </div>
     </div>
@@ -48,61 +49,61 @@
     <script>
         function buscarPersonaje(){
             const nombre = $("#NombrePersonaje").val().trim()
-            
-            function buscarHeroe(){
-                const nombre = $("#nombreHeroe").val().trim()
 
-                if(!nombre){
-                    $("#resultado").html('<p style="color:#ff6b6b;">Ingresa un nombre para buscar.</p>')
-                    return
-                }
+            if(!nombre){
+                $("#resultado").html('<p style="color:red;">Por favor escribe el nombre de un personaje</p>')
+                return
+            }
 
-                $("#resultado").html('<p class="loading">Cargando...</p>')
+            $("#resultado").html('<p class="loading">...</p>')
 
-                $.ajax({
-                    url: 'https://akabab.github.io/starwars-api/api/all.json',
-                    method: 'GET',
-                    success: function(data){
-                        const encontrado = data.find(item => item.name.toLowerCase().includes(nombre.toLowerCase()))
+            $.ajax({
+                url: 'https://akabab.github.io/starwars-api/api/all.json',
+                method: 'GET',
+                success: function(data){
+                    const personaje = data.find(item => item.name.toLowerCase().includes(nombre.toLowerCase()))
 
-                        if(encontrado){
-                            $("#resultado").html(`
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h2 class="card-title">${encontrado.name}</h2>
-                                        <div class="row">
-                                            <div class="col-md-7">
-                                                <p><strong>Origen:</strong> ${encontrado.homeworld || 'Desconocido'}</p>
-                                                <p><strong>Raza:</strong> ${encontrado.species || 'Humano'}</p>
-                                                <p><strong>Altura:</strong> ${encontrado.height}</p>
-                                                <p><strong>Peso:</strong> ${encontrado.mass}</p>
-                                                <p><strong>Género:</strong> ${encontrado.gender}</p>
-                                                <p><strong>Ojos:</strong> ${encontrado.eyeColor}</p>
-                                                <p><strong>Cabello:</strong> ${encontrado.hairColor}</p>
-                                            </div>
-                                            <div class="col-md-5 text-center d-flex align-items-center justify-content-center">
-                                                <img 
-                                                    src="${encontrado.image}" 
-                                                    alt="${encontrado.name}" 
-                                                    class="img-fluid" 
-                                                    style="max-width:250px; border-radius: 18px; border:4px solid #00ff99; box-shadow: 0 8px 20px rgba(0,0,0,0.3);"
-                                                    onerror="this.src='https://via.placeholder.com/300x400?text=No+image'"
-                                                >
-                                            </div>
+                    if(personaje){
+                        $("#resultado").html(`
+                            <div class="card">
+                                <div class="card-body">
+                                    <h2 class="card-title">${personaje.name}</h2>
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <p><strong>Planeta de Origen:</strong> ${personaje.homeworld || 'Desconocido'}</p>
+                                            <p><strong>Especie:</strong> ${personaje.species || 'Humano'}</p>
+                                            <p><strong>Altura:</strong> ${personaje.height}</p>
+                                            <p><strong>Masa:</strong> ${personaje.mass}</p>
+                                            <p><strong>Genero:</strong> ${personaje.gender}</p>
+                                            <p><strong>Color de ojos:</strong> ${personaje.eyeColor}</p>
+                                            <p><strong>Color de cabello:</strong> ${personaje.hairColor}</p>
+                                        </div>
+                                        <div class="col-md-5 text-center d-flex align-items-center justify-content-center">
+                                            <img 
+                                                src="${personaje.image}" 
+                                                alt="${personaje.name}" 
+                                                class="img-fluid" 
+                                                style="max-width:250px; border-radius: 20px; border:4px solid #ffc107; box-shadow: 0 8px 20px rgba(0,0,0,0.3);"
+                                                onerror="this.src='https://via.placeholder.com/300x400?text=Imagen+no+disponible'"
+                                            >
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                            `)
-                        }else{
-                            $("#resultado").html('<p style="color:#ff6b6b;">No se encontró el personaje. Intenta otro nombre.</p>')
-                        }
-
-                    },
-                    error: function(){
-                        $("#resultado").html('<p style="color:#ff6b6b;">Error al obtener datos. Intenta más tarde.</p>')
+                        `)
+                    }else{
+                        $("#resultado").html('<p style="color:red;">Personaje no encontrado. Intenta con otro nombre.</p>')
                     }
-                })
 
-            }
+                },
+                error: function(){
+                    $("#resultado").html('<p style="color:red;">Error al obtener datos</p>')
+                }
+            })
+
         }
+    </script>
+
+</body>
+</html>
